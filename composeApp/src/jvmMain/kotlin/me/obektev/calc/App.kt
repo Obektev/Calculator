@@ -28,11 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 private val calculatorRows = listOf(
-    listOf("7", "8", "9", "/"),
-    listOf("4", "5", "6", "*"),
-    listOf("1", "2", "3", "-"),
-    listOf("0", ".", "C", "+"),
-    listOf("="),
+    listOf("CE", "C", "%", "/"),
+    listOf("7", "8", "9", "*"),
+    listOf("4", "5", "6", "-"),
+    listOf("1", "2", "3", "+"),
+    listOf("+/-", "0", ".", "="),
 )
 
 @Composable
@@ -40,16 +40,16 @@ private val calculatorRows = listOf(
 fun App() {
     MaterialTheme {
         val calculatorEngine = remember { CalculatorEngine() }
+        val buttonFactory = remember { StandardCalculatorButtonFactory() }
+        val buttons = remember { buttonFactory.createRows(calculatorRows) }
+        val buttonLookup = remember(buttons) {
+            buttons.flatten().associateBy { it.label }
+        }
         var display by remember { mutableStateOf(calculatorEngine.display) }
 
-        fun handleInput(input: String) {
-            when {
-                input.all { it.isDigit() } -> calculatorEngine.inputDigit(input.toInt())
-                input == "." -> calculatorEngine.inputDecimalPoint()
-                input in listOf("+", "-", "*", "/") -> calculatorEngine.setOperation(input)
-                input == "=" -> calculatorEngine.evaluate()
-                input == "C" -> calculatorEngine.clearAll()
-            }
+        fun handleInput(token: String) {
+            val button = buttonLookup[token] ?: return
+            button.press(calculatorEngine)
             display = calculatorEngine.display
         }
 
@@ -76,6 +76,11 @@ fun App() {
                                 true
                             }
 
+                            Key.Backspace -> {
+                                handleInput("CE")
+                                true
+                            }
+
                             else -> {
                                 val char = event.utf16CodePoint.toChar()
                                 if (char in '0'..'9') {
@@ -89,6 +94,9 @@ fun App() {
                                     true
                                 } else if (char == '=' ) {
                                     handleInput("=")
+                                    true
+                                } else if (char == '%') {
+                                    handleInput("%")
                                     true
                                 } else {
                                     false
@@ -108,19 +116,22 @@ fun App() {
                     textStyle = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.End),
                 )
 
-                calculatorRows.forEach { row ->
+                buttons.forEach { row ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
                     ) {
-                        row.forEach { label ->
+                        row.forEach { button ->
                             Button(
-                                onClick = { handleInput(label) },
+                                onClick = {
+                                    button.press(calculatorEngine)
+                                    display = calculatorEngine.display
+                                },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(vertical = 2.dp),
                             ) {
-                                Text(label)
+                                Text(button.label)
                             }
                         }
                     }
