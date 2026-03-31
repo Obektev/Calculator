@@ -12,10 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -26,31 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-private val calculatorRows = listOf(
-    listOf("CE", "C", "%", "/"),
-    listOf("7", "8", "9", "*"),
-    listOf("4", "5", "6", "-"),
-    listOf("1", "2", "3", "+"),
-    listOf("+/-", "0", ".", "="),
-)
+import me.obektev.calc.mvvm.CalculatorViewModel
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        val calculatorEngine = remember { CalculatorEngine() }
-        val buttonFactory = remember { StandardCalculatorButtonFactory() }
-        val buttons = remember { buttonFactory.createRows(calculatorRows) }
-        val buttonLookup = remember(buttons) {
-            buttons.flatten().associateBy { it.label }
-        }
-        var display by remember { mutableStateOf(calculatorEngine.display) }
+        val viewModel = remember { CalculatorViewModel() }
+        val uiState = viewModel.uiState
 
         fun handleInput(token: String) {
-            val button = buttonLookup[token] ?: return
-            button.press(calculatorEngine)
-            display = calculatorEngine.display
+            viewModel.onToken(token)
         }
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -108,7 +91,7 @@ fun App() {
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing),
             ) {
                 OutlinedTextField(
-                    value = display,
+                    value = uiState.display,
                     onValueChange = {},
                     readOnly = true,
                     singleLine = true,
@@ -116,22 +99,19 @@ fun App() {
                     textStyle = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.End),
                 )
 
-                buttons.forEach { row ->
+                uiState.rows.forEach { row ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
                     ) {
-                        row.forEach { button ->
+                        row.forEach { label ->
                             Button(
-                                onClick = {
-                                    button.press(calculatorEngine)
-                                    display = calculatorEngine.display
-                                },
+                                onClick = { handleInput(label) },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(vertical = 2.dp),
                             ) {
-                                Text(button.label)
+                                Text(label)
                             }
                         }
                     }
