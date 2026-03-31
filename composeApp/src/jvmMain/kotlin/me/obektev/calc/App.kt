@@ -16,6 +16,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,7 +37,19 @@ private val calculatorRows = listOf(
 @Preview
 fun App() {
     MaterialTheme {
-        var display by remember { mutableStateOf("0") }
+        val calculatorEngine = remember { CalculatorEngine() }
+        var display by remember { mutableStateOf(calculatorEngine.display) }
+
+        fun handleInput(input: String) {
+            when {
+                input.all { it.isDigit() } -> calculatorEngine.inputDigit(input.toInt())
+                input == "." -> calculatorEngine.inputDecimalPoint()
+                input in listOf("+", "-", "*", "/") -> calculatorEngine.setOperation(input)
+                input == "=" -> calculatorEngine.evaluate()
+                input == "C" -> calculatorEngine.clearAll()
+            }
+            display = calculatorEngine.display
+        }
 
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             val buttonSpacing = 8.dp
@@ -41,7 +57,44 @@ fun App() {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .onPreviewKeyEvent { event ->
+                        if (event.type != KeyEventType.KeyDown) {
+                            return@onPreviewKeyEvent false
+                        }
+
+                        val handled = when (event.key) {
+                            Key.Enter, Key.NumPadEnter -> {
+                                handleInput("=")
+                                true
+                            }
+
+                            Key.Escape -> {
+                                handleInput("C")
+                                true
+                            }
+
+                            else -> {
+                                val char = event.nativeKeyEvent.keyChar
+                                if (char in '0'..'9') {
+                                    handleInput(char.toString())
+                                    true
+                                } else if (char in charArrayOf('+', '-', '*', '/')) {
+                                    handleInput(char.toString())
+                                    true
+                                } else if (char == '.' || char == ',') {
+                                    handleInput(".")
+                                    true
+                                } else if (char == '=' ) {
+                                    handleInput("=")
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                        }
+                        handled
+                    },
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing),
             ) {
                 OutlinedTextField(
@@ -60,13 +113,7 @@ fun App() {
                     ) {
                         row.forEach { label ->
                             Button(
-                                onClick = {
-                                    display = when {
-                                        label == "C" -> "0"
-                                        display == "0" -> label
-                                        else -> display + label
-                                    }
-                                },
+                                onClick = { handleInput(label) },
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(vertical = 2.dp),
