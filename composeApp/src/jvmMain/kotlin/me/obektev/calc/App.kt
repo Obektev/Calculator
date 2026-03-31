@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.key.utf16CodePoint
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +66,7 @@ fun App() {
                         }
 
                         val handled = when (event.key) {
-                            Key.Enter, Key.NumPadEnter -> {
+                            Key.Enter -> {
                                 handleInput("=")
                                 true
                             }
@@ -75,7 +77,7 @@ fun App() {
                             }
 
                             else -> {
-                                val char = event.nativeKeyEvent.keyChar
+                                val char = event.utf16CodePoint.toChar()
                                 if (char in '0'..'9') {
                                     handleInput(char.toString())
                                     true
