@@ -1,3 +1,11 @@
+## Authors and Lab
+
+$${\color{lightgreen}{Иванов} \space \color{lightgreen}{|} \space \color{lightgreen}{Коломиец}}$$
+$${\color{magenta}{10701124}}$$
+$${\color{magenta}{Lab1-3}}$$
+
+---
+
 This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
