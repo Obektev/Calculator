@@ -62,6 +62,21 @@ class CalculatorEngine(
         startNewInput = true
     }
 
+    fun clearEntry() {
+        display = "0"
+        startNewInput = true
+    }
+
+    fun toggleSign() {
+        val currentValue = display.toDoubleOrNull() ?: return
+        display = formatNumber(-currentValue)
+    }
+
+    fun applyPercent() {
+        val currentValue = display.toDoubleOrNull() ?: return
+        display = formatNumber(currentValue / 100.0)
+    }
+
     private fun evaluateInternal(rightOperand: Double) {
         val operation = pendingOperation ?: return
         val left = leftOperand ?: rightOperand
