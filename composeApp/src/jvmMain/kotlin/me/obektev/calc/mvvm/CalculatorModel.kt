@@ -14,6 +14,10 @@ class CalculatorModel(
 
     fun displayText(): String = engine.display
 
+    fun angleModeText(): String = engine.angleMode.name
+
+    fun hasMemoryIndicator(): Boolean = engine.hasMemoryValue
+
     fun rows(): List<List<String>> = layout
 
     fun handleToken(token: String) {
@@ -22,7 +26,11 @@ class CalculatorModel(
 
     companion object {
         val DEFAULT_LAYOUT = listOf(
-            listOf("CE", "C", "%", "/"),
+            listOf("DEG", "RAD", "MC", "MR"),
+            listOf("MS", "M+", "M-", "%"),
+            listOf("sin", "cos", "tan", "ln"),
+            listOf("sqrt", "x2", "1/x", "%"),
+            listOf("CE", "C", "/", "="),
             listOf("7", "8", "9", "*"),
             listOf("4", "5", "6", "-"),
             listOf("1", "2", "3", "+"),

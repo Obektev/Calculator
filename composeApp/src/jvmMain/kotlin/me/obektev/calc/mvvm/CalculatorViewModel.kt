@@ -10,6 +10,8 @@ class CalculatorViewModel(
     var uiState by mutableStateOf(
         CalculatorUiState(
             display = model.displayText(),
+            angleMode = model.angleModeText(),
+            memoryActive = model.hasMemoryIndicator(),
             rows = model.rows(),
         ),
     )
@@ -17,6 +19,10 @@ class CalculatorViewModel(
 
     fun onToken(token: String) {
         model.handleToken(token)
-        uiState = uiState.copy(display = model.displayText())
+        uiState = uiState.copy(
+            display = model.displayText(),
+            angleMode = model.angleModeText(),
+            memoryActive = model.hasMemoryIndicator(),
+        )
     }
 }

@@ -90,6 +90,14 @@ fun App() {
                     },
                 verticalArrangement = Arrangement.spacedBy(buttonSpacing),
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Mode: ${uiState.angleMode}")
+                    Text(if (uiState.memoryActive) "Memory: M" else "Memory: -")
+                }
+
                 OutlinedTextField(
                     value = uiState.display,
                     onValueChange = {},
