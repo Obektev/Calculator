@@ -36,4 +36,10 @@ class CalculatorButtonFactoryTest {
         val button = factory.createRows(listOf(listOf("MR"))).first().first()
         assertTrue(button is MemoryRecallButton)
     }
+
+    @Test
+    fun shouldCreateAngleModeButton() {
+        val button = factory.createRows(listOf(listOf("DEG"))).first().first()
+        assertTrue(button is DegreeModeButton)
+    }
 }

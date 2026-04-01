@@ -2,6 +2,8 @@ package me.obektev.calc
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class CalculatorEngineTest {
 
@@ -142,5 +144,43 @@ class CalculatorEngineTest {
         engine.memoryRecall()
 
         assertEquals("12", engine.display)
+    }
+
+    @Test
+    fun shouldApplyTrigInDegreeMode() {
+        val engine = CalculatorEngine()
+
+        engine.setDegreeMode()
+        engine.inputDigit(9)
+        engine.inputDigit(0)
+        engine.applySin()
+
+        assertEquals("1", engine.display)
+    }
+
+    @Test
+    fun shouldApplyTrigInRadianMode() {
+        val engine = CalculatorEngine()
+
+        engine.setRadianMode()
+        engine.inputDigit(9)
+        engine.inputDigit(0)
+        engine.applySin()
+
+        assertTrue(engine.display != "1")
+    }
+
+    @Test
+    fun shouldTrackMemoryIndicatorState() {
+        val engine = CalculatorEngine()
+
+        assertFalse(engine.hasMemoryValue)
+
+        engine.inputDigit(7)
+        engine.memoryStore()
+        assertTrue(engine.hasMemoryValue)
+
+        engine.memoryClear()
+        assertFalse(engine.hasMemoryValue)
     }
 }

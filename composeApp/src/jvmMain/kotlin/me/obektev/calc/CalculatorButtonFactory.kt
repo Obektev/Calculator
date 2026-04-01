@@ -40,6 +40,8 @@ class StandardCalculatorButtonFactory : CalculatorButtonFactory() {
             "MS" -> MemoryStoreButton()
             "M+" -> MemoryAddButton()
             "M-" -> MemorySubtractButton()
+            "DEG" -> DegreeModeButton()
+            "RAD" -> RadianModeButton()
             else -> throw IllegalArgumentException("Unsupported token: $token")
         }
     }

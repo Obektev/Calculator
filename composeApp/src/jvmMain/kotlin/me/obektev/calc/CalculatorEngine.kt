@@ -6,16 +6,29 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
 
+enum class AngleMode {
+    DEG,
+    RAD,
+}
+
 class CalculatorEngine(
     private val operationRegistry: OperationRegistry = OperationRegistry(),
 ) {
     var display: String = "0"
         private set
 
+    val angleMode: AngleMode
+        get() = currentAngleMode
+
+    val hasMemoryValue: Boolean
+        get() = hasMemory
+
     private var leftOperand: Double? = null
     private var pendingOperation: CalculatorOperation? = null
     private var startNewInput: Boolean = true
     private var memory: Double = 0.0
+    private var hasMemory: Boolean = false
+    private var currentAngleMode: AngleMode = AngleMode.RAD
 
     fun inputDigit(digit: Int) {
         if (display == "Error" || startNewInput || display == "0") {
@@ -116,20 +129,29 @@ class CalculatorEngine(
     }
 
     fun applySin() {
-        applyUnaryOperation { value -> sin(value) }
+        applyUnaryOperation { value -> sin(toRadiansIfNeeded(value)) }
     }
 
     fun applyCos() {
-        applyUnaryOperation { value -> cos(value) }
+        applyUnaryOperation { value -> cos(toRadiansIfNeeded(value)) }
     }
 
     fun applyTan() {
-        applyUnaryOperation { value -> tan(value) }
+        applyUnaryOperation { value -> tan(toRadiansIfNeeded(value)) }
+    }
+
+    fun setDegreeMode() {
+        currentAngleMode = AngleMode.DEG
+    }
+
+    fun setRadianMode() {
+        currentAngleMode = AngleMode.RAD
     }
 
     fun memoryStore() {
         val currentValue = display.toDoubleOrNull() ?: return
         memory = currentValue
+        hasMemory = true
         startNewInput = true
     }
 
@@ -140,17 +162,20 @@ class CalculatorEngine(
 
     fun memoryClear() {
         memory = 0.0
+        hasMemory = false
     }
 
     fun memoryAdd() {
         val currentValue = display.toDoubleOrNull() ?: return
         memory += currentValue
+        hasMemory = true
         startNewInput = true
     }
 
     fun memorySubtract() {
         val currentValue = display.toDoubleOrNull() ?: return
         memory -= currentValue
+        hasMemory = true
         startNewInput = true
     }
 
@@ -184,6 +209,14 @@ class CalculatorEngine(
             leftOperand = null
             pendingOperation = null
             startNewInput = true
+        }
+    }
+
+    private fun toRadiansIfNeeded(value: Double): Double {
+        return if (currentAngleMode == AngleMode.DEG) {
+            Math.toRadians(value)
+        } else {
+            value
         }
     }
 

@@ -123,3 +123,15 @@ class MemorySubtractButton : CalculatorButton("M-") {
         engine.memorySubtract()
     }
 }
+
+class DegreeModeButton : CalculatorButton("DEG") {
+    override fun press(engine: CalculatorEngine) {
+        engine.setDegreeMode()
+    }
+}
+
+class RadianModeButton : CalculatorButton("RAD") {
+    override fun press(engine: CalculatorEngine) {
+        engine.setRadianMode()
+    }
+}

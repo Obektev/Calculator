@@ -2,6 +2,8 @@ package me.obektev.calc
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import me.obektev.calc.mvvm.CalculatorViewModel
 
 class CalculatorViewModelTest {
@@ -42,5 +44,26 @@ class CalculatorViewModelTest {
         viewModel.onToken("MR")
 
         assertEquals("9", viewModel.uiState.display)
+    }
+
+    @Test
+    fun shouldUpdateModeAndMemoryIndicators() {
+        val viewModel = CalculatorViewModel()
+
+        assertEquals("RAD", viewModel.uiState.angleMode)
+        assertFalse(viewModel.uiState.memoryActive)
+
+        viewModel.onToken("DEG")
+        viewModel.onToken("9")
+        viewModel.onToken("0")
+        viewModel.onToken("sin")
+        assertEquals("1", viewModel.uiState.display)
+        assertEquals("DEG", viewModel.uiState.angleMode)
+
+        viewModel.onToken("MS")
+        assertTrue(viewModel.uiState.memoryActive)
+
+        viewModel.onToken("MC")
+        assertFalse(viewModel.uiState.memoryActive)
     }
 }
