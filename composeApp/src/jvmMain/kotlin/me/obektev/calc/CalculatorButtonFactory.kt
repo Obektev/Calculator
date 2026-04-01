@@ -28,6 +28,18 @@ class StandardCalculatorButtonFactory : CalculatorButtonFactory() {
             "CE" -> ClearEntryButton()
             "%" -> PercentButton()
             "+/-" -> SignButton()
+            "sqrt" -> SquareRootButton()
+            "x2" -> SquareButton()
+            "1/x" -> ReciprocalButton()
+            "ln" -> NaturalLogButton()
+            "sin" -> SinButton()
+            "cos" -> CosButton()
+            "tan" -> TanButton()
+            "MC" -> MemoryClearButton()
+            "MR" -> MemoryRecallButton()
+            "MS" -> MemoryStoreButton()
+            "M+" -> MemoryAddButton()
+            "M-" -> MemorySubtractButton()
             else -> throw IllegalArgumentException("Unsupported token: $token")
         }
     }

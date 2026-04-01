@@ -29,4 +29,18 @@ class CalculatorViewModelTest {
 
         assertEquals("-0.09", viewModel.uiState.display)
     }
+
+    @Test
+    fun shouldApplyEngineeringAndMemoryThroughViewModel() {
+        val viewModel = CalculatorViewModel()
+
+        viewModel.onToken("8")
+        viewModel.onToken("1")
+        viewModel.onToken("sqrt")
+        viewModel.onToken("MS")
+        viewModel.onToken("C")
+        viewModel.onToken("MR")
+
+        assertEquals("9", viewModel.uiState.display)
+    }
 }

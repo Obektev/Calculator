@@ -93,4 +93,54 @@ class CalculatorEngineTest {
 
         assertEquals("102", engine.display)
     }
+
+    @Test
+    fun shouldCalculateSquareRoot() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(8)
+        engine.inputDigit(1)
+        engine.applySquareRoot()
+
+        assertEquals("9", engine.display)
+    }
+
+    @Test
+    fun shouldCalculateNaturalLog() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(1)
+        engine.applyNaturalLog()
+
+        assertEquals("0", engine.display)
+    }
+
+    @Test
+    fun shouldUseMemoryStoreAndRecall() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(4)
+        engine.inputDigit(2)
+        engine.memoryStore()
+        engine.clearAll()
+        engine.memoryRecall()
+
+        assertEquals("42", engine.display)
+    }
+
+    @Test
+    fun shouldUseMemoryAddAndSubtract() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(1)
+        engine.inputDigit(0)
+        engine.memoryStore()
+        engine.inputDigit(5)
+        engine.memoryAdd()
+        engine.inputDigit(3)
+        engine.memorySubtract()
+        engine.memoryRecall()
+
+        assertEquals("12", engine.display)
+    }
 }

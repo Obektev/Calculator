@@ -22,11 +22,14 @@ class CalculatorModel(
 
     companion object {
         val DEFAULT_LAYOUT = listOf(
-            listOf("CE", "C", "%", "/"),
+            listOf("MC", "MR", "MS", "M+"),
+            listOf("M-", "sin", "cos", "tan"),
+            listOf("ln", "sqrt", "x2", "1/x"),
+            listOf("CE", "C", "/", "="),
             listOf("7", "8", "9", "*"),
             listOf("4", "5", "6", "-"),
             listOf("1", "2", "3", "+"),
-            listOf("+/-", "0", ".", "="),
+            listOf("+/-", "0", ".", "%"),
         )
     }
 }

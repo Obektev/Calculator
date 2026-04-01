@@ -51,3 +51,75 @@ class SignButton : CalculatorButton("+/-") {
         engine.toggleSign()
     }
 }
+
+class SquareRootButton : CalculatorButton("sqrt") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applySquareRoot()
+    }
+}
+
+class SquareButton : CalculatorButton("x2") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applySquare()
+    }
+}
+
+class ReciprocalButton : CalculatorButton("1/x") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applyReciprocal()
+    }
+}
+
+class NaturalLogButton : CalculatorButton("ln") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applyNaturalLog()
+    }
+}
+
+class SinButton : CalculatorButton("sin") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applySin()
+    }
+}
+
+class CosButton : CalculatorButton("cos") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applyCos()
+    }
+}
+
+class TanButton : CalculatorButton("tan") {
+    override fun press(engine: CalculatorEngine) {
+        engine.applyTan()
+    }
+}
+
+class MemoryClearButton : CalculatorButton("MC") {
+    override fun press(engine: CalculatorEngine) {
+        engine.memoryClear()
+    }
+}
+
+class MemoryRecallButton : CalculatorButton("MR") {
+    override fun press(engine: CalculatorEngine) {
+        engine.memoryRecall()
+    }
+}
+
+class MemoryStoreButton : CalculatorButton("MS") {
+    override fun press(engine: CalculatorEngine) {
+        engine.memoryStore()
+    }
+}
+
+class MemoryAddButton : CalculatorButton("M+") {
+    override fun press(engine: CalculatorEngine) {
+        engine.memoryAdd()
+    }
+}
+
+class MemorySubtractButton : CalculatorButton("M-") {
+    override fun press(engine: CalculatorEngine) {
+        engine.memorySubtract()
+    }
+}
