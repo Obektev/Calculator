@@ -87,4 +87,15 @@ class CalculatorViewModelTest {
         assertEquals("9 +", viewModel.uiState.display)
         assertEquals("+", viewModel.uiState.commandHistory.first())
     }
+
+    @Test
+    fun shouldToggleEngineeringMode() {
+        val viewModel = CalculatorViewModel()
+
+        assertFalse(viewModel.uiState.engineeringModeEnabled)
+
+        viewModel.onToggleCalculatorMode()
+
+        assertTrue(viewModel.uiState.engineeringModeEnabled)
+    }
 }

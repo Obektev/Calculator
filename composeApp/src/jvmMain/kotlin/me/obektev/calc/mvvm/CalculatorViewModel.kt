@@ -12,7 +12,9 @@ class CalculatorViewModel(
             display = model.displayText(),
             angleMode = model.angleModeText(),
             memoryActive = model.hasMemoryIndicator(),
-            rows = model.rows(),
+            basicRows = model.basicRows(),
+            engineeringRows = model.engineeringRows(),
+            engineeringModeEnabled = model.isEngineeringMode(),
             commandHistory = model.history(),
             canUndo = model.canUndo(),
         ),
@@ -29,11 +31,23 @@ class CalculatorViewModel(
         syncState()
     }
 
+    fun onToggleCalculatorMode() {
+        model.toggleMode()
+        syncState()
+    }
+
+    fun buttonGroup(token: String): ButtonGroup {
+        return model.buttonGroup(token)
+    }
+
     private fun syncState() {
         uiState = uiState.copy(
             display = model.displayText(),
             angleMode = model.angleModeText(),
             memoryActive = model.hasMemoryIndicator(),
+            basicRows = model.basicRows(),
+            engineeringRows = model.engineeringRows(),
+            engineeringModeEnabled = model.isEngineeringMode(),
             commandHistory = model.history(),
             canUndo = model.canUndo(),
         )

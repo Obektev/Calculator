@@ -1,5 +1,10 @@
 package me.obektev.calc
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import me.obektev.calc.mvvm.ButtonGroup
 import me.obektev.calc.mvvm.CalculatorViewModel
 
 @Composable
@@ -145,6 +151,13 @@ fun App() {
                     Text(if (uiState.memoryActive) "Memory: M" else "Memory: -")
                 }
 
+                Button(
+                    onClick = { viewModel.onToggleCalculatorMode() },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(if (uiState.engineeringModeEnabled) "Переключить на обычный" else "Переключить на инженерный")
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
@@ -166,16 +179,17 @@ fun App() {
                     textStyle = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.End),
                 )
 
-                uiState.rows.forEach { row ->
+                uiState.basicRows.forEach { row ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
                     ) {
                         row.forEach { label ->
+                            val buttonGroup = viewModel.buttonGroup(label)
                             Button(
                                 onClick = { handleInput(label) },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Black,
+                                    containerColor = buttonColor(buttonGroup),
                                     contentColor = Color.White,
                                 ),
                                 modifier = Modifier
@@ -187,7 +201,48 @@ fun App() {
                         }
                     }
                 }
+
+                AnimatedVisibility(
+                    visible = uiState.engineeringModeEnabled,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically(),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(buttonSpacing)) {
+                        uiState.engineeringRows.forEach { row ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
+                            ) {
+                                row.forEach { label ->
+                                    val buttonGroup = viewModel.buttonGroup(label)
+                                    Button(
+                                        onClick = { handleInput(label) },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = buttonColor(buttonGroup),
+                                            contentColor = Color.White,
+                                        ),
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 2.dp),
+                                    ) {
+                                        Text(label)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+}
+
+private fun buttonColor(group: ButtonGroup): Color {
+    return when (group) {
+        ButtonGroup.MEMORY -> Color(0xFF4A6FA5)
+        ButtonGroup.ENGINEERING -> Color(0xFF2D8F85)
+        ButtonGroup.OPERATOR -> Color(0xFFB05E27)
+        ButtonGroup.DIGIT -> Color(0xFF3A3A3A)
+        ButtonGroup.CONTROL -> Color(0xFF8A3D3D)
     }
 }

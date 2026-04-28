@@ -7,9 +7,9 @@ import me.obektev.calc.StandardCalculatorButtonFactory
 class CalculatorModel(
     private val engine: CalculatorEngine = CalculatorEngine(),
     buttonFactory: CalculatorButtonFactory = StandardCalculatorButtonFactory(),
-    private val layout: List<List<String>> = DEFAULT_LAYOUT,
+    private val layoutFacade: CalculatorLayoutFacade = DefaultCalculatorLayoutFacade(),
 ) {
-    private val buttons = buttonFactory.createRows(layout)
+    private val buttons = buttonFactory.createRows(layoutFacade.basicRows() + layoutFacade.engineeringRows())
     private val buttonLookup = buttons.flatten().associateBy { it.label }
     private val commandHistory = mutableListOf<CalculatorCommand>()
     private val commandLabels = mutableListOf<String>()
@@ -17,6 +17,7 @@ class CalculatorModel(
         buttonLookup[token]?.press(engine)
         buttonLookup.containsKey(token)
     }
+    private var engineeringModeEnabled: Boolean = false
 
     fun displayText(): String = engine.expressionDisplay
 
@@ -24,7 +25,13 @@ class CalculatorModel(
 
     fun hasMemoryIndicator(): Boolean = engine.hasMemoryValue
 
-    fun rows(): List<List<String>> = layout
+    fun basicRows(): List<List<String>> = layoutFacade.basicRows()
+
+    fun engineeringRows(): List<List<String>> = layoutFacade.engineeringRows()
+
+    fun isEngineeringMode(): Boolean = engineeringModeEnabled
+
+    fun buttonGroup(token: String): ButtonGroup = layoutFacade.buttonGroup(token)
 
     fun history(): List<String> = commandLabels.asReversed()
 
@@ -44,17 +51,7 @@ class CalculatorModel(
         commandLabels.removeLastOrNull()
     }
 
-    companion object {
-        val DEFAULT_LAYOUT = listOf(
-            listOf("DEG", "RAD", "MC", "MR"),
-            listOf("MS", "M+", "M-", "%"),
-            listOf("sin", "cos", "tan", "ln"),
-            listOf("sqrt", "x2", "1/x", "%"),
-            listOf("CE", "C", "/", "="),
-            listOf("7", "8", "9", "*"),
-            listOf("4", "5", "6", "-"),
-            listOf("1", "2", "3", "+"),
-            listOf("+/-", "0", ".", "="),
-        )
+    fun toggleMode() {
+        engineeringModeEnabled = !engineeringModeEnabled
     }
 }
