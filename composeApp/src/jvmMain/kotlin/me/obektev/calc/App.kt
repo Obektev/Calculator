@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -22,10 +23,14 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -33,14 +38,21 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.key.utf16CodePoint
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import calculator.composeapp.generated.resources.Res
+import calculator.composeapp.generated.resources.app_badge
 import kotlinx.coroutines.launch
 import me.obektev.calc.mvvm.ButtonGroup
 import me.obektev.calc.mvvm.CalculatorViewModel
+import me.obektev.calc.resources.ResourceLoader
+import org.jetbrains.compose.resources.painterResource
+import java.nio.file.Path
 
 @Composable
 @Preview
@@ -50,6 +62,8 @@ fun App() {
         val uiState = viewModel.uiState
         val drawerState = rememberDrawerState(initialValue = androidx.compose.material3.DrawerValue.Closed)
         val scope = rememberCoroutineScope()
+        var showResourceDialog by remember { mutableStateOf(false) }
+        var dynamicResourceText by remember { mutableStateOf("Динамический ресурс не загружен") }
 
         fun handleInput(token: String) {
             viewModel.onToken(token)
@@ -147,13 +161,18 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(Res.drawable.app_badge),
+                        contentDescription = "Calculator icon",
+                        tint = Color.Unspecified,
+                    )
                     Text("Mode: ${uiState.angleMode}")
                     Text(if (uiState.memoryActive) "Memory: M" else "Memory: -")
                 }
 
                 Button(
                     onClick = { viewModel.onToggleCalculatorMode() },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().pointerHoverIcon(PointerIcon.Hand),
                 ) {
                     Text(if (uiState.engineeringModeEnabled) "Переключить на обычный" else "Переключить на инженерный")
                 }
@@ -162,10 +181,43 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
                 ) {
-                    Button(onClick = { scope.launch { drawerState.open() } }, modifier = Modifier.weight(1f)) {
+                    Button(
+                        onClick = {
+                            val dynamicPath = Path.of("reports", "lab6_dynamic_note.txt")
+                            dynamicResourceText = if (ResourceLoader.dynamicResourceExists(dynamicPath)) {
+                                ResourceLoader.loadDynamicText(dynamicPath)
+                            } else {
+                                "Файл динамического ресурса не найден: ${dynamicPath.toAbsolutePath()}"
+                            }
+                            showResourceDialog = true
+                        },
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand),
+                    ) {
+                        Text("Загрузить ресурс")
+                    }
+                    Button(
+                        onClick = { showResourceDialog = true },
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand),
+                    ) {
+                        Text("О программе")
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(buttonSpacing),
+                ) {
+                    Button(
+                        onClick = { scope.launch { drawerState.open() } },
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand),
+                    ) {
                         Text("История")
                     }
-                    Button(onClick = { viewModel.onUndo() }, enabled = uiState.canUndo, modifier = Modifier.weight(1f)) {
+                    Button(
+                        onClick = { viewModel.onUndo() },
+                        enabled = uiState.canUndo,
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand),
+                    ) {
                         Text("Undo")
                     }
                 }
@@ -194,6 +246,7 @@ fun App() {
                                 ),
                                 modifier = Modifier
                                     .weight(1f)
+                                    .pointerHoverIcon(PointerIcon.Hand)
                                     .padding(vertical = 2.dp),
                             ) {
                                 Text(label)
@@ -223,6 +276,7 @@ fun App() {
                                         ),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .pointerHoverIcon(PointerIcon.Hand)
                                             .padding(vertical = 2.dp),
                                     ) {
                                         Text(label)
@@ -232,6 +286,19 @@ fun App() {
                         }
                     }
                 }
+            }
+
+            if (showResourceDialog) {
+                AlertDialog(
+                    onDismissRequest = { showResourceDialog = false },
+                    title = { Text("Ресурсы приложения") },
+                    text = { Text(dynamicResourceText) },
+                    confirmButton = {
+                        TextButton(onClick = { showResourceDialog = false }) {
+                            Text("Закрыть")
+                        }
+                    },
+                )
             }
         }
     }
