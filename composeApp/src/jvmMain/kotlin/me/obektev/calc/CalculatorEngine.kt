@@ -304,7 +304,11 @@ class CalculatorEngine(
         }
 
         val expression = expressionTokens.joinToString(" ")
-        return if (startNewInput) {
+        val leftAsText = leftOperand?.let { formatNumber(it) }
+        val waitingForRightOperand =
+            startNewInput && pendingOperation != null && leftAsText != null && display == leftAsText
+
+        return if (waitingForRightOperand) {
             expression
         } else {
             "$expression $display"

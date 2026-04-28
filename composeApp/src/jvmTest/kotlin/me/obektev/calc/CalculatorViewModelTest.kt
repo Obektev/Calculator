@@ -98,4 +98,18 @@ class CalculatorViewModelTest {
 
         assertTrue(viewModel.uiState.engineeringModeEnabled)
     }
+
+    @Test
+    fun shouldDisplayMemoryRecallAfterOperatorInUi() {
+        val viewModel = CalculatorViewModel()
+
+        viewModel.onToken("8")
+        viewModel.onToken("MS")
+        viewModel.onToken("C")
+        viewModel.onToken("1")
+        viewModel.onToken("+")
+        viewModel.onToken("MR")
+
+        assertEquals("1 + 8", viewModel.uiState.display)
+    }
 }

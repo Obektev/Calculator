@@ -214,4 +214,36 @@ class CalculatorEngineTest {
 
         assertEquals("4", engine.display)
     }
+
+    @Test
+    fun shouldShowRecalledMemoryAsRightOperand() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(8)
+        engine.memoryStore()
+        engine.clearAll()
+        engine.inputDigit(1)
+        engine.setOperation("+")
+        engine.memoryRecall()
+
+        assertEquals("1 + 8", engine.expressionDisplay)
+    }
+
+    @Test
+    fun shouldShowUnaryResultAfterOperator() {
+        val engine = CalculatorEngine()
+
+        engine.setDegreeMode()
+        engine.inputDigit(2)
+        engine.setOperation("+")
+        engine.inputDigit(9)
+        engine.inputDigit(0)
+        engine.applySin()
+
+        assertEquals("2 + 1", engine.expressionDisplay)
+
+        engine.evaluate()
+
+        assertEquals("3", engine.expressionDisplay)
+    }
 }
