@@ -16,6 +16,9 @@ class CalculatorViewModelTest {
         viewModel.onToken("0")
         viewModel.onToken("+")
         viewModel.onToken("5")
+
+        assertEquals("10 + 5", viewModel.uiState.display)
+
         viewModel.onToken("=")
 
         assertEquals("15", viewModel.uiState.display)
@@ -65,5 +68,23 @@ class CalculatorViewModelTest {
 
         viewModel.onToken("MC")
         assertFalse(viewModel.uiState.memoryActive)
+    }
+
+    @Test
+    fun shouldTrackHistoryAndUndoLastCommand() {
+        val viewModel = CalculatorViewModel()
+
+        viewModel.onToken("9")
+        viewModel.onToken("+")
+        viewModel.onToken("1")
+
+        assertTrue(viewModel.uiState.commandHistory.isNotEmpty())
+        assertTrue(viewModel.uiState.canUndo)
+        assertEquals("9 + 1", viewModel.uiState.display)
+
+        viewModel.onUndo()
+
+        assertEquals("9 +", viewModel.uiState.display)
+        assertEquals("+", viewModel.uiState.commandHistory.first())
     }
 }

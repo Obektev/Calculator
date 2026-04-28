@@ -11,8 +11,14 @@ class CalculatorModel(
 ) {
     private val buttons = buttonFactory.createRows(layout)
     private val buttonLookup = buttons.flatten().associateBy { it.label }
+    private val commandHistory = mutableListOf<CalculatorCommand>()
+    private val commandLabels = mutableListOf<String>()
+    private val commandContext = CommandContext(engine) { token ->
+        buttonLookup[token]?.press(engine)
+        buttonLookup.containsKey(token)
+    }
 
-    fun displayText(): String = engine.display
+    fun displayText(): String = engine.expressionDisplay
 
     fun angleModeText(): String = engine.angleMode.name
 
@@ -20,8 +26,22 @@ class CalculatorModel(
 
     fun rows(): List<List<String>> = layout
 
+    fun history(): List<String> = commandLabels.asReversed()
+
+    fun canUndo(): Boolean = commandHistory.isNotEmpty()
+
     fun handleToken(token: String) {
-        buttonLookup[token]?.press(engine)
+        val command = TokenCommand(token)
+        if (command.execute(commandContext)) {
+            commandHistory.add(command)
+            commandLabels.add(command.label)
+        }
+    }
+
+    fun undoLastCommand() {
+        val command = commandHistory.removeLastOrNull() ?: return
+        command.undo(commandContext)
+        commandLabels.removeLastOrNull()
     }
 
     companion object {

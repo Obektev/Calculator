@@ -183,4 +183,35 @@ class CalculatorEngineTest {
         engine.memoryClear()
         assertFalse(engine.hasMemoryValue)
     }
+
+    @Test
+    fun shouldShowExpressionThenResult() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(1)
+        engine.inputDigit(2)
+        engine.setOperation("+")
+        engine.inputDigit(7)
+
+        assertEquals("12 + 7", engine.expressionDisplay)
+
+        engine.evaluate()
+
+        assertEquals("19", engine.expressionDisplay)
+    }
+
+    @Test
+    fun shouldRestoreSnapshot() {
+        val engine = CalculatorEngine()
+
+        engine.inputDigit(4)
+        val snapshot = engine.saveSnapshot()
+        engine.inputDigit(2)
+
+        assertEquals("42", engine.display)
+
+        engine.restoreSnapshot(snapshot)
+
+        assertEquals("4", engine.display)
+    }
 }

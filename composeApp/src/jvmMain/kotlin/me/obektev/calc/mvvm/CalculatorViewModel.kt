@@ -13,16 +13,29 @@ class CalculatorViewModel(
             angleMode = model.angleModeText(),
             memoryActive = model.hasMemoryIndicator(),
             rows = model.rows(),
+            commandHistory = model.history(),
+            canUndo = model.canUndo(),
         ),
     )
         private set
 
     fun onToken(token: String) {
         model.handleToken(token)
+        syncState()
+    }
+
+    fun onUndo() {
+        model.undoLastCommand()
+        syncState()
+    }
+
+    private fun syncState() {
         uiState = uiState.copy(
             display = model.displayText(),
             angleMode = model.angleModeText(),
             memoryActive = model.hasMemoryIndicator(),
+            commandHistory = model.history(),
+            canUndo = model.canUndo(),
         )
     }
 }

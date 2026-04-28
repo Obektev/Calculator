@@ -5,4 +5,6 @@ data class CalculatorUiState(
     val angleMode: String = "RAD",
     val memoryActive: Boolean = false,
     val rows: List<List<String>> = emptyList(),
+    val commandHistory: List<String> = emptyList(),
+    val canUndo: Boolean = false,
 )
