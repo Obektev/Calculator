@@ -33,3 +33,8 @@ plugins {
 }
 
 include(":composeApp")
+include(":calculator-parser")
+include(":calculator-evaluator")
+include(":calculator-memory")
+include(":calculator-developers-api")
+include(":calculator-developers")

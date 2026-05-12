@@ -1,35 +1,100 @@
-## Authors and Lab
+# Calculator lab7-8
 
-$${\color{lightgreen}{Иванов} \space \color{lightgreen}{|} \space \color{lightgreen}{Коломиец}}$$
-$${\color{magenta}{10701124}}$$
-$${\color{magenta}{Lab 1-6}}$$
+Финальная версия проекта для ветки `lab7-8`.
 
----
+Проект объединяет изменения лабораторных работ #07 и #08:
 
-This is a Kotlin Multiplatform project targeting Desktop (JVM).
+- `lab7`: внешний конфигурационный файл приложения.
+- `lab8`: рефакторинг калькулятора в пользовательские Kotlin-библиотеки.
+- Дополнительно: окно разработчиков с фотографией, плейсхолдером и `LazyColumn`.
+- Дополнительно: звуковые эффекты для клавиш калькулятора.
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+## Конфигурация приложения
 
-### Build and Run Desktop (JVM) Application
+Файл:
 
-To build and run the development version of the desktop app, use the run configuration from the run widget
-in your IDE’s toolbar or run it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:run
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:run
-  ```
+```text
+config/application.properties
+```
 
----
+Через него можно менять без перекомпиляции:
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- размер окна;
+- фон;
+- стиль интерфейса;
+- семейство и размер шрифта;
+- демонстрационные параметры подключения к БД.
+
+Поддерживаемые стили:
+
+```text
+lowVisionLight, lowVisionDark, masculine, feminine, children, youth, adult, senior
+```
+
+Если файл отсутствует или содержит ошибочные значения, приложение использует безопасные настройки по умолчанию и показывает диагностику в окне `Конфигурация`.
+
+## Пользовательские библиотеки
+
+- `calculator-parser` - парсинг выражений со скобками и приоритетами операций.
+- `calculator-evaluator` - вычисление выражений.
+- `calculator-memory` - память калькулятора.
+- `calculator-developers-api` - API для динамической библиотеки.
+- `calculator-developers` - JAR с информацией о разработчиках.
+- `composeApp` - графическое Compose Desktop приложение.
+
+Статически подключены библиотеки вычислений и памяти. Динамическая загрузка показана через `dynamic-libs/calculator-developers.jar`.
+
+## Окно разработчиков
+
+Кнопка `Разработчики` открывает диалог с `LazyColumn`.
+
+В списке:
+
+- Коломиец Т. П. - используется фотография из ресурса `kolomiets_tp.jpg`.
+- Иванов А. И. - используется графический плейсхолдер.
+
+Текст:
+
+```text
+Коломиец Т. П., Иванов А. И., студенты группы 10701124, руководитель: Станкевич С.Н.
+```
+
+## Звуковые эффекты
+
+Звуки генерируются программно в `SoundEffects.kt`:
+
+- цифры и точка - короткий высокий щелчок;
+- операции - более низкий сигнал;
+- `=` - яркий сигнал результата;
+- `C` и `CE` - низкий сигнал очистки;
+- память - мягкий средний сигнал;
+- инженерные функции - отдельный высокий сигнал;
+- меню, история, конфигурация и окно разработчиков - короткий сервисный сигнал.
+
+## Запуск
+
+На этой машине Gradle/Kotlin DSL не стартует под JDK 25, поэтому для проверки использовался JDK 24:
+
+```bash
+JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-24.jdk/Contents/Home ./gradlew :composeApp:run
+```
+
+В обычном окружении с JDK 21/24:
+
+```bash
+./gradlew :composeApp:run
+```
+
+## Тесты
+
+```bash
+JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-24.jdk/Contents/Home ./gradlew :calculator-evaluator:allTests :calculator-memory:allTests :composeApp:jvmTest --no-daemon
+```
+
+## Установочный пакет
+
+```bash
+./gradlew :composeApp:packageDmg
+```
+
+Для Linux и Windows доступны `packageDeb` и `packageMsi`.

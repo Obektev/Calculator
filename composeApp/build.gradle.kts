@@ -27,6 +27,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(project(":calculator-evaluator"))
+            implementation(project(":calculator-memory"))
+            implementation(project(":calculator-developers-api"))
         }
         jvmTest.dependencies {
             implementation(libs.kotlin.test)

@@ -5,6 +5,8 @@ import kotlin.math.ln
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
+import me.obektev.calc.memory.CalculatorMemory
+import me.obektev.calc.memory.MemorySnapshot
 
 enum class AngleMode {
     DEG,
@@ -33,13 +35,12 @@ class CalculatorEngine(
         get() = currentAngleMode
 
     val hasMemoryValue: Boolean
-        get() = hasMemory
+        get() = memory.hasValue
 
     private var leftOperand: Double? = null
     private var pendingOperation: CalculatorOperation? = null
     private var startNewInput: Boolean = true
-    private var memory: Double = 0.0
-    private var hasMemory: Boolean = false
+    private val memory: CalculatorMemory = CalculatorMemory()
     private var currentAngleMode: AngleMode = AngleMode.RAD
     private var expressionTokens: MutableList<String> = mutableListOf()
     private var resultCommitted: Boolean = false
@@ -200,32 +201,28 @@ class CalculatorEngine(
 
     fun memoryStore() {
         val currentValue = display.toDoubleOrNull() ?: return
-        memory = currentValue
-        hasMemory = true
+        memory.store(currentValue)
         startNewInput = true
     }
 
     fun memoryRecall() {
-        display = formatNumber(memory)
+        display = formatNumber(memory.recall())
         startNewInput = true
     }
 
     fun memoryClear() {
-        memory = 0.0
-        hasMemory = false
+        memory.clear()
     }
 
     fun memoryAdd() {
         val currentValue = display.toDoubleOrNull() ?: return
-        memory += currentValue
-        hasMemory = true
+        memory.add(currentValue)
         startNewInput = true
     }
 
     fun memorySubtract() {
         val currentValue = display.toDoubleOrNull() ?: return
-        memory -= currentValue
-        hasMemory = true
+        memory.subtract(currentValue)
         startNewInput = true
     }
 
@@ -235,8 +232,8 @@ class CalculatorEngine(
             leftOperand = leftOperand,
             pendingOperationSymbol = pendingOperation?.symbol,
             startNewInput = startNewInput,
-            memory = memory,
-            hasMemory = hasMemory,
+            memory = memory.snapshot().value,
+            hasMemory = memory.snapshot().active,
             currentAngleMode = currentAngleMode,
             expressionTokens = expressionTokens.toList(),
             resultCommitted = resultCommitted,
@@ -248,8 +245,7 @@ class CalculatorEngine(
         leftOperand = snapshot.leftOperand
         pendingOperation = snapshot.pendingOperationSymbol?.let { operationRegistry.findBySymbol(it) }
         startNewInput = snapshot.startNewInput
-        memory = snapshot.memory
-        hasMemory = snapshot.hasMemory
+        memory.restore(MemorySnapshot(value = snapshot.memory, active = snapshot.hasMemory))
         currentAngleMode = snapshot.currentAngleMode
         expressionTokens = snapshot.expressionTokens.toMutableList()
         resultCommitted = snapshot.resultCommitted
